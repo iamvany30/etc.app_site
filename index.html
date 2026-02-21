@@ -423,61 +423,96 @@
     </div>
 
 <script>
-        const sendToIsland = (command, payload) => {
-            console.log(`__ITD_ISLAND_${command}__:` + JSON.stringify(payload));
+    const ItdBridge = (() => {
+        const send = (cmd, payload) => {
+            const msg = `__ITD_ISLAND_${cmd}__${payload ? ':' + JSON.stringify(payload) : ''}`;
+            console.log(msg);
+        };
+        return {
+            theme: (color1, color2) => send('THEME', { color1, color2 }),
+            alert: (message, type = "success", icon = "✨", duration = 4000) => 
+                send('ALERT', { message, type, icon, duration }),
+            activity: (title, subtitle, icon = "🌐", progress = null) => 
+                send('ACTIVITY', { title, subtitle, icon, progress }),
+            clear: () => send('CLEAR_ACTIVITY')
+        };
+    })();
+
+    ItdBridge.theme("#2AABEE", "#794bc4");
+
+    setTimeout(() => ItdBridge.alert("Добро пожаловать в итд.app!", "success", "👋"), 800);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const btn = document.getElementById('download-btn');
+        const btnText = document.getElementById('btn-text');
+        const versionDisplay = document.getElementById('version-display');
+        const fallbackUrl = 'https://github.com/iamvany30/etc.app/releases';
+
+        const emojiMap = {
+            "Музыка": "🎵",
+            "Discord": "🎮",
+            "Приватность": "🛡️",
+            "Кастомизация": "🎨",
+            "Скорость": "⚡"
         };
 
-        sendToIsland('THEME', { color1: "#2AABEE", color2: "#794bc4" });
-
-        setTimeout(() => {
-            sendToIsland('ALERT', { message: "Добро пожаловать на сайт итд.app!", type: "success", icon: "👋" });
-        }, 800);
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const btn = document.getElementById('download-btn');
-            const btnText = document.getElementById('btn-text');
-            const versionDisplay = document.getElementById('version-display');
-            const fallbackUrl = 'https://github.com/iamvany30/etc.app/releases';
-
-            btn.addEventListener('click', () => {
-                sendToIsland('ALERT', { message: "Инициализация загрузки...", type: "success", icon: "🚀" });
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const title = card.querySelector('.feature-title').innerText;
+                const emoji = Object.keys(emojiMap).find(key => title.includes(key)) || "✨";
+                ItdBridge.activity("Изучает функции", title, emoji);
             });
+            card.addEventListener('mouseleave', () => ItdBridge.clear());
+        });
 
-            document.querySelectorAll('.feature-card').forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    const title = card.querySelector('.feature-title').innerText;
-                    sendToIsland('ALERT', { message: title, type: "clipboard", icon: "✨" });
-                });
-            });
-
-            try {
-                await new Promise(r => setTimeout(r, 800));
-                const response = await fetch('https://api.github.com/repos/iamvany30/etc.app/releases/latest');
+        btn.addEventListener('click', (e) => {
+            if (btn.getAttribute('href') === '#') {
+                e.preventDefault();
+                let progress = 0;
                 
-                if (!response.ok) throw new Error('API Error');
-                
-                const data = await response.json();
-                const exeAsset = data.assets.find(a => a.name.endsWith('.exe'));
-                
-                btn.classList.remove('skeleton');
-                versionDisplay.classList.remove('skeleton');
-                versionDisplay.innerText = data.tag_name;
-
-                if (exeAsset) {
-                    btn.href = exeAsset.browser_download_url;
-                    btnText.innerText = 'Скачать для Windows';
-                } else {
-                    btn.href = data.html_url;
-                    btnText.innerText = 'Скачать с GitHub';
-                }
-            } catch (error) {
-                btn.classList.remove('skeleton');
-                versionDisplay.classList.remove('skeleton');
-                btn.href = fallbackUrl;
-                btnText.innerText = 'Перейти на GitHub';
-                versionDisplay.innerText = 'Latest';
+                const interval = setInterval(() => {
+                    progress += Math.floor(Math.random() * 15) + 5;
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        ItdBridge.activity("Распаковка", "Установка файлов...", "📦", null);
+                        setTimeout(() => {
+                            ItdBridge.clear();
+                            ItdBridge.alert("Готово к запуску!", "success", "🚀", 5000);
+                        }, 1500);
+                    } else {
+                        ItdBridge.activity("Загрузка итд.app", "Осталось немного...", "📥", progress);
+                    }
+                }, 400);
             }
         });
-    </script>
+
+        try {
+            const [response] = await Promise.all([
+                fetch('https://api.github.com/repos/iamvany30/etc.app/releases/latest'),
+                new Promise(r => setTimeout(r, 800))
+            ]);
+
+            if (!response.ok) throw new Error();
+            const data = await response.json();
+            const exe = data.assets.find(a => a.name.endsWith('.exe'));
+
+            versionDisplay.innerText = data.tag_name;
+            if (exe) {
+                btn.href = exe.browser_download_url;
+                btnText.innerText = 'Скачать для Windows';
+            } else {
+                btn.href = data.html_url;
+                btnText.innerText = 'Скачать с GitHub';
+            }
+        } catch {
+            btn.href = fallbackUrl;
+            btnText.innerText = 'Перейти на GitHub';
+            versionDisplay.innerText = 'Latest';
+        } finally {
+            btn.classList.remove('skeleton');
+            versionDisplay.classList.remove('skeleton');
+        }
+    });
+</script>
 </body>
 </html>
