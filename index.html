@@ -422,25 +422,39 @@
         </footer>
     </div>
 
-    <script>
-        console.log('__ITD_ISLAND_THEME__:' + JSON.stringify({ color1: "#2AABEE", color2: "#050505" }));
+<script>
+        const sendToIsland = (command, payload) => {
+            console.log(`__ITD_ISLAND_${command}__:` + JSON.stringify(payload));
+        };
+
+        sendToIsland('THEME', { color1: "#2AABEE", color2: "#794bc4" });
+
+        setTimeout(() => {
+            sendToIsland('ALERT', { message: "Добро пожаловать на сайт итд.app!", type: "success", icon: "👋" });
+        }, 800);
 
         document.addEventListener('DOMContentLoaded', async () => {
             const btn = document.getElementById('download-btn');
             const btnText = document.getElementById('btn-text');
             const versionDisplay = document.getElementById('version-display');
-            
             const fallbackUrl = 'https://github.com/iamvany30/etc.app/releases';
 
             btn.addEventListener('click', () => {
-                console.log('__ITD_ISLAND_ALERT__:' + JSON.stringify({ message: "Переход к загрузке", type: "success", icon: "🚀" }));
+                sendToIsland('ALERT', { message: "Инициализация загрузки...", type: "success", icon: "🚀" });
+            });
+
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    const title = card.querySelector('.feature-title').innerText;
+                    sendToIsland('ALERT', { message: title, type: "clipboard", icon: "✨" });
+                });
             });
 
             try {
                 await new Promise(r => setTimeout(r, 800));
                 const response = await fetch('https://api.github.com/repos/iamvany30/etc.app/releases/latest');
                 
-                if (!response.ok) throw new Error('GitHub API Error');
+                if (!response.ok) throw new Error('API Error');
                 
                 const data = await response.json();
                 const exeAsset = data.assets.find(a => a.name.endsWith('.exe'));
@@ -457,11 +471,8 @@
                     btnText.innerText = 'Скачать с GitHub';
                 }
             } catch (error) {
-                console.error("Error fetching release:", error);
-                
                 btn.classList.remove('skeleton');
                 versionDisplay.classList.remove('skeleton');
-                
                 btn.href = fallbackUrl;
                 btnText.innerText = 'Перейти на GitHub';
                 versionDisplay.innerText = 'Latest';
