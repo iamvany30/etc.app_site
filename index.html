@@ -425,8 +425,7 @@
 <script>
     const ItdBridge = (() => {
         const send = (cmd, payload) => {
-            const msg = `__ITD_ISLAND_${cmd}__${payload ? ':' + JSON.stringify(payload) : ''}`;
-            console.log(msg);
+            console.log(`__ITD_ISLAND_${cmd}__${payload ? ':' + JSON.stringify(payload) : ''}`);
         };
         return {
             theme: (color1, color2) => send('THEME', { color1, color2 }),
@@ -449,18 +448,20 @@
         const fallbackUrl = 'https://github.com/iamvany30/etc.app/releases';
 
         const emojiMap = {
-            "Музыка": "🎵",
-            "Discord": "🎮",
-            "Приватность": "🛡️",
-            "Кастомизация": "🎨",
-            "Скорость": "⚡"
+            "музыка": "🎵",
+            "discord": "🎮",
+            "приватность": "🛡️",
+            "кастомизация": "🎨",
+            "скорость": "⚡"
         };
 
         document.querySelectorAll('.feature-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
-                const title = card.querySelector('.feature-title').innerText;
-                const emoji = Object.keys(emojiMap).find(key => title.includes(key)) || "✨";
-                ItdBridge.activity("Изучает функции", title, emoji);
+                const text = card.querySelector('.feature-title').innerText.trim();
+                const lowerText = text.toLowerCase();
+                const emoji = Object.entries(emojiMap).find(([key]) => lowerText.includes(key))?.[1] || "✨";
+                
+                ItdBridge.activity("Изучает функции", text, emoji);
             });
             card.addEventListener('mouseleave', () => ItdBridge.clear());
         });
@@ -480,7 +481,7 @@
                             ItdBridge.alert("Готово к запуску!", "success", "🚀", 5000);
                         }, 1500);
                     } else {
-                        ItdBridge.activity("Загрузка итд.app", "Осталось немного...", "📥", progress);
+                        ItdBridge.activity("Загрузка итд.app", "Осталось немного...", "📥", Math.min(progress, 100));
                     }
                 }, 400);
             }
