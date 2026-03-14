@@ -1,0 +1,21 @@
+{
+  "name": "итд.app",
+  "version": "0.9.8",
+  "description": "Социальная сеть нового поколения. Делитесь моментами, музыкой и мыслями.",
+  "repository": "https://github.com/iamvany30/etc.app",
+  "authorName": "iamvany",
+  "assets": [
+    {
+      "name": "etc.app-setup-0.9.8.exe",
+      "browser_download_url": "https://github.com/iamvany30/etc.app/releases/download/v0.9.8/etc.app-setup-0.9.8.exe"
+    },
+    {
+      "name": "etc.app-setup-0.9.8.exe.blockmap",
+      "browser_download_url": "https://github.com/iamvany30/etc.app/releases/download/v0.9.8/etc.app-setup-0.9.8.exe.blockmap"
+    },
+    {
+      "name": "latest.yml",
+      "browser_download_url": "https://github.com/iamvany30/etc.app/releases/download/v0.9.8/latest.yml"
+    }
+  ]
+}
