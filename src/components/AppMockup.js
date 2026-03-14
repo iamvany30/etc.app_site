@@ -38,8 +38,8 @@ const AppMockup = () => {
              <div className="av" style={{background: 'linear-gradient(135deg, #1d9bf0, #794bc4)'}}></div>
              <div className="m-post-content">
                 <div>
-                    <span className="m-post-name">itdStatus </span>
-                    <span className="m-post-handle">@status · 2ч</span>
+                    <span className="m-post-name">итд.app</span>
+                    <span className="m-post-handle">@etc_app · 2ч</span>
                 </div>
                 <div className="m-post-text">
                     Вышло новое обновление клиента! Добавили поддержку кастомных тем и плагинов. 🚀🔥
@@ -56,7 +56,7 @@ const AppMockup = () => {
              <div className="av" style={{background: '#00ba7c'}}></div>
              <div className="m-post-content">
                 <div>
-                    <span className="m-post-name">Graphic Chestnut </span>
+                    <span className="m-post-name">Design</span>
                     <span className="m-post-handle">@design · 5ч</span>
                 </div>
                 <div className="m-post-text">
